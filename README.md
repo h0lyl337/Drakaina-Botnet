@@ -37,4 +37,10 @@ FEATURES TO ADD:
       Launch python script on the fly
 
       different persistance methods
+      
+      screenshots
+      
+      remotedesktop
+     
+     
 
