@@ -7,7 +7,7 @@ If the pay load is not running and is not on the file system because it got dele
 or somehow, watchdog will redownload and place the payload in the specified directory.
 
 
-#Instruction:
+# Instruction:
 
 After extracting all the files to a folder, go into the static directory and static and create a folder called windows, and another
 called linux. These folders will contain your binary/exe payload and watchdog files, so that the RAT can redownload them incase it got
