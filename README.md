@@ -32,12 +32,14 @@
 
 /create link = create a 1 time dynamic link to gather information ( incomplete ), link will stop working after it is clicked.
 
+/help = show this.
+
 
 
 
 # Server:
 
-+ Feature:
++ Features:
 
 + Checks if user is registered
 + Register users
