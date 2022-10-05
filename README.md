@@ -4,6 +4,7 @@ AIO Botnet/ watchdog/ server/ command and control in python, its simple and will
 you must open your port 1337 for the time being. will include details in the future.
 
 Progress:
+
   windows = 80%
   linux = 40%
   mac = 0%
