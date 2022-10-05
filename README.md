@@ -3,6 +3,11 @@
 AIO Botnet/ watchdog/ server/ command and control in python, its simple and will be worked on in the future. for reverse shell
 you must open your port 1337 for the time being. will include details in the future.
 
+Progress:
+  windows = 80%
+  linux = 40%
+  mac = 0%
+
 # Watchdog:
 
 The purpose of this watchdog is to make sure that the payload is always running.
