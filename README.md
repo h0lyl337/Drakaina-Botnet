@@ -6,6 +6,7 @@ you must open your port 1337 for the time being. will include details in the fut
 Progress:
 
   windows = 80%
+  1) needs more commands
   
   
   linux = 40%
