@@ -38,6 +38,12 @@ if not already.
 The payload with continutiously contact the server and wait for command, and wait to connect
 to a remote shell server( if configured to).
 
+Features:
+
+Memory
+
+
+
 # C&C terminal:
 
 The core functionality of the command & control script is the list information about the users,
