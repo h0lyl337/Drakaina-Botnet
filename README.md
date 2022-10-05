@@ -6,7 +6,11 @@ you must open your port 1337 for the time being. will include details in the fut
 Progress:
 
   windows = 80%
+  
+  
   linux = 40%
+  
+  
   mac = 0%
 
 # Watchdog:
