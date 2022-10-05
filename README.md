@@ -38,7 +38,7 @@ if not already.
 The payload with continutiously contact the server and wait for command, and wait to connect
 to a remote shell server( if configured to).
 
-  Features:
+- ![#f03c15] Features:
 
 Memory
 
