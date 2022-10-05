@@ -10,11 +10,13 @@
 
 4) place both compiled files in the Windows folder you created ealiar, these files will be automatically downloaded to your target when they click the link.
 
-5) run server.py using " python server.py " or " python3 server.py " from the commandline.
+5) open server_config.cfg and change the server and port to what you want the server to run on.
 
-6) test by downloading the Watchdog file from the link "http://<yourip>:<port>/downloads/windows/watchdog"
+6) run server.py using " python server.py " or " python3 server.py " from the commandline.
 
-7) you should see requests comming in to your server...enjoy
+7) test by downloading the Watchdog file from the link "http://<yourip>:<port>/downloads/windows/watchdog"
+
+8) you should see requests comming in to your server...enjoy
 
 
 
