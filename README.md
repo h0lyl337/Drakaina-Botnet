@@ -19,7 +19,18 @@ Watchdog will kill the payload process from running if TaskManager is open, and 
 remove payload from file system untile Taskmanager is closed.
 
 
+# Payload:
 
+Once the payload is ran, it will try and connect to the server and register to the database
+if not already.
+
+The payload with continutiously contact the server and wait for command, and wait to connect
+to a remote shell server( if configured to).
+
+
+# Server:
+
+Once the server is started, it will create an empty database for future users.
 
 
 # Instruction:
