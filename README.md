@@ -6,8 +6,8 @@ you must open your port 1337 for the time being. will include details in the fut
 # Watchdog:
 
 The purpose of this watchdog is to make sure that the payload is always running.
-Watch dog will can load the payload from memory, or download payload to disk and
-execute ( depening on your configuration).
+Watchdog will can load the payload from memory, or download payload to disk and
+execute ( depening on your configuration ).
 
 If the payload binary is not running and is not on the file system because it got deleated 
 or somehow, watchdog will redownload and place the payload in the specified directory.
@@ -15,7 +15,10 @@ or somehow, watchdog will redownload and place the payload in the specified dire
 Watchdog will hide it's self from Taskmanager and removes it'self from startup folder, until
 Taskmanager is closed.
 
-Watchdog will kill the payload process from running if TaskManager is open.
+Watchdog will kill the payload process from running if TaskManager is open, and temporaly
+remove payload from file system untile Taskmanager is closed.
+
+
 
 
 
