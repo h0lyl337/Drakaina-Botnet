@@ -7,7 +7,7 @@ you must open your port 1337 for the time being. will include details in the fut
 
  Mac Support
  
- Linux Support
+ Linux Support ( programmed, and works on linux, just need to implement all the windows features, since windows is what i been focused on.)
  
  More windows commands
  
