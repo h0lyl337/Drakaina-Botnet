@@ -38,6 +38,13 @@ if not already.
 The payload with continutiously contact the server and wait for command, and wait to connect
 to a remote shell server( if configured to).
 
+# C&C terminal:
+
+The core functionality of the command & control script is the list information about the users,
+target them and send commands to the database, so the next time the payload see's it has a command,
+it will run said command.
+
+
 
 # Server:
 
