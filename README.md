@@ -2,6 +2,10 @@
 A HTTP botnet with the main core features with more to come, completely made in python.
 Take control of anyone's computer like it's non of your buisness, because it is not.
 
+# Requiremts:
+
+1) python3
+
 # Instructions:
 
 1) open server.cfg and change the server and port to what you want the server to run on.
