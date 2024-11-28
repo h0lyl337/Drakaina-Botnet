@@ -32,20 +32,46 @@
       <a style="float:right">theme <button></button></a>
       <a>version: 1.0</a><br> 
 
-        <button>Home</button>
-      <button>Slaves</button>
-      <button>Settings</button>
-      <button>Build</button>
+      <img src="./static/images/home-icon.png" style="height:2em;">
+      <img src="./static/images/rat-icon.png" style="height:2em;">
+      <img src="./static/images/Settings-icon.png" style="height:2em;">
+      <img src="./static/images/build-icon.png" style="height:2em;">
       <button>Attacks</button>
 
   
     </div>
   </header>
+  <div style="border:1px solid white;float:right;color:white;">
+    <h3 style="color:white;">Unkown Visitors:</h3>
+    <center>
+      <table>
+        <tr>
+          <th>
+            ip
+          </th><br>
+        </tr>
+        <td>192.168.1.1</td>
+      </table>
+    </center>
+  </div>
+
+  <div style="border:1px solid white;float:left;color:white;">
+    <h3 style="color:white;">Unkown Visitors:</h3>
+    <center>
+      <table>
+        <tr>
+          <th>
+            ip
+          </th><br>
+        </tr>
+        <td>192.168.1.1</td>
+      </table>
+    </center>
+  </div>
 </center>
 <br>
 <center>
   <div style="background-color: black;color:white;">
-    Total: 100 <br>
     <center>
       <table>
         <tr>
@@ -56,7 +82,7 @@
           <td>Last_Seen</td>
           <td>Registered</td>
         </tr>
-          {% set count = 1 %}
+        {% set count = namespace(value=0) %}
           {% for ip, user, os , registered, last_seen in rats %}
           <tr class="rat-table">
           <td>{{ip}}</td>
@@ -74,10 +100,11 @@
           <td>{{last_seen}}</td>
           <td>{{registered}}</td>
           <td>
-            <button id="target-{{count}}">target</button>
+            <button id="target-{{ count.value }}">target</button>
             </td>
           <td><button>Delete</button></td>
-          <td><div id="target-control-{{count}}" style="display: none;">
+          <td>
+            <div id='target-control-{{ count.value }}' style="display: none;">
             <button>screenshot</button>
             <button style="float:right;">mic-record</button>
             <br>
@@ -99,58 +126,46 @@
             <input>
             <br>
             <br>
+            <center><a>port:</a></center>
+            <br>
+            <input>
+            <br>
+            <br>
             <button style="float:left;">Shutdown</button>
             <button style="float:right;">Reboot</button>
-          </div></td>
+          </div>
+        </td>
         </tr>
-        {% block javascript %}
         <script type="text/python">
           from browser import document, alert
-
+          
           def target_clicked(event):
               print('asdf')
-              element = document["target-control-{{count}}"]
+              element = document["target-control-{{ count.value }}"]
               style = element.style
               if style.display == "none":
                   style.display = "block"
               else:
                   style.display = "none"
                     
-          document["target-{{count}}"].bind("click", target_clicked)
-
+          document["target-{{ count.value }}"].bind("click", target_clicked)
         </script>
 
-        {% endblock %}
-        {% set count = count + 1 %}
+        {% set count.value = count.value + 1 %}
         {% endfor %}
+        <a>total-clients: {{count.value}}</a>
+        
         
         
       </table>
     </center>
   </div>
 </center>
-
-<div style="border:1px solid white;float:left;color:white;">
-  <h3 style="color:white;">Unkown Visitors:</h3>
-  <center>
-    <table>
-      <tr>
-        <th>
-          ip
-        </th><br>
-      </tr>
-      <td>192.168.1.1</td>
-    </table>
-  </center>
-</div>
+<br>
 
 
 
 
 
-
-  
-  
-  
 </body>
 </html>
