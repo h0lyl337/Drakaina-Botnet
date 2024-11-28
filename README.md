@@ -9,9 +9,9 @@ Take control of anyone's computer like it's non of your buisness, because it is 
 
 # Installation:
 
-1) Make sure all files are in the same folder.
+1) run python server.py
 
-2) run python server.py
+2) run commandandcontrol.py
 
 3) run python watchdog.py on target computer
 
