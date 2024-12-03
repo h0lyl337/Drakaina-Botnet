@@ -13,20 +13,23 @@ https://discord.gg/ZV5mHBQy
 
 ![plot](./images/cncss.png)
 
+# Prerequisite
 
+1) make sure python3 is installed
+   
+2) if you would like to compile a python into an exe / bin file install nuitka with , " pip install nuitka "
+   
 # Installation:
 
-1) install the latest python-3
-
-2) run " pip install -r requirements.txt "
+1) run " pip install -r requirements.txt "
    
-3) configure server.cfg
+2) configure server.cfg
 
-4) run " python server.py "
+3) run " python server.py "
   
-5) on target pc run " python stager.py "
+4) on target pc run " python stager.py "
    
-6) run " commandandcontrol.py " to communicate with target pc
+5) run " commandandcontrol.py " to communicate with target pc
 
 ----------------------------
 
