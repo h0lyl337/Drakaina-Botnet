@@ -1,6 +1,13 @@
 # Drakaina-Botnet-Lite
-A HTTP botnet with the main core features with more to come, completely made in python.
-Take control of anyone's computer like it's non of your buisness, because it is not.
+A HTTP botnet with lite features completely made in python.
+
+This program is for educational purposes only and I am not responsible for what anyone does with it.
+
+Their is a paid PRO version of this program in the works, nearly completed.
+
+Feel free join my discord channel if you have any questions about this project.
+https://discord.gg/ZV5mHBQy
+
 
 ![plot](./images/icon.png)
 
@@ -9,11 +16,17 @@ Take control of anyone's computer like it's non of your buisness, because it is 
 
 # Installation:
 
-1) run python server.py
+1) install the latest python-3
 
-2) run commandandcontrol.py
+2) run " pip install -r requirements.txt "
+   
+3) configure server.cfg
 
-3) run python stager.py on target computer
+4) run " python server.py "
+  
+5) on target pc run " python stager.py "
+   
+6) run " commandandcontrol.py " to communicate with target pc
 
 ----------------------------
 
